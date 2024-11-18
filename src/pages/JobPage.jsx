@@ -3,11 +3,14 @@
 import { Link, useLoaderData, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaMapMarker } from "react-icons/fa";
 import { toast } from "react-toastify";
+import supabase from "../config/supabaseClient";
 
 const jobLoader = async ({ params }) => {
-  const res = await fetch(`http://localhost:8000/jobs/${params.id}`);
-  const jobData = await res.json();
-  return jobData;
+  const { data: jobData, error } = await supabase.from('jobs').select(`*, company(*)`).eq('id', params.id) 
+  // fetch(`http://localhost:8000/jobs/${params.id}`);
+  // const jobData = await res.json();
+  console.log(jobData[0])
+  return jobData[0];
 };
 
 function JobPage({ deleteJob }) {

@@ -11,27 +11,46 @@ import {
 import AddJobsPage from "./pages/AddJobsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import EditJobPage from "./pages/EditJobPage";
+import supabase from "./config/supabaseClient";
 
 function App() {
   const addJob = async (job) => {
-    const res = await fetch("http://localhost:8000/jobs", {
-      method: "POST",
-      body: JSON.stringify(job),
-    });
+    // await fetch("http://localhost:8000/jobs", {
+    //   method: "POST",
+    //   body: JSON.stringify(job),
+    // });
+
+    const { data, error } = await supabase
+      .from("company")
+      .insert(job.company)
+      .select();
+    await supabase.from("jobs").insert({ ...job, company: data[0].id });
     return;
   };
 
   const deleteJob = async (id) => {
-    await fetch(`http://localhost:8000/jobs/${id}`, {
-      method: "DELETE",
-    });
+    // await fetch(`http://localhost:8000/jobs/${id}`, {
+    //   method: "DELETE",
+    // });
+    await supabase.from("jobs").delete().eq("id", id);
   };
 
   const updateJob = async (job) => {
-    await fetch(`http://localhost:8000/jobs/${job.id}`, {
-      method: "PUT",
-      body: JSON.stringify(job),
-    });
+    // await fetch(`http://localhost:8000/jobs/${job.id}`, {
+    //   method: "PUT",
+    //   body: JSON.stringify(job),
+    // });
+
+    const { data, error } = await supabase
+      .from("company")
+      .update(job.company)
+      .eq("id", job.company.id)
+      .select();
+
+    await supabase
+      .from("jobs")
+      .update({ ...job, company: data[0].id })
+      .eq("id", job.id);
   };
 
   const router = createBrowserRouter(

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import JobListing from "./JobListing";
 import Spinner from "./Spinner";
+import supabase from "../config/supabaseClient";
 
 function JobListings({ callFrom }) {
   const [allJobs, setAllJobs] = useState([]);
@@ -9,13 +10,17 @@ function JobListings({ callFrom }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const apiUrl =
-          callFrom == "homePage"
-            ? "http://localhost:8000/jobs?_limit=3"
-            : "http://localhost:8000/jobs";
-        const res = await fetch(apiUrl);
-        const jobs = await res.json();
-        setAllJobs(jobs);
+        // const apiUrl =
+        //   callFrom == "homePage"
+        //     ? "http://localhost:8000/jobs?_limit=3"
+        //     : "http://localhost:8000/jobs";
+        // const res = await fetch(apiUrl);
+        // const jobs = await res.json();
+        
+        const supabaseJobs = supabase.from("jobs").select(`*, company(*)`);
+
+        const { data, error } = await (callFrom == 'homePage' ? supabaseJobs.limit(3) : supabaseJobs);
+        setAllJobs(data);
         setIsLoading(false);
       } catch (err) {
         const error = new Error(err);

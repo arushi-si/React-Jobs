@@ -28,6 +28,7 @@ function EditJobPage({ updateJob }) {
       location,
       type,
       company: {
+        id: job.company.id,
         name: companyName,
         description: companyDescription,
         contactEmail,
